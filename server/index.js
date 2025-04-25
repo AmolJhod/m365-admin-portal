@@ -7,7 +7,7 @@ require("dotenv").config();
 const app = express();
 const port = 3200;
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(cookieParser()); // Use cookie-parser middleware
 app.use(express.json()); // Middleware to parse JSON
 
@@ -59,7 +59,7 @@ app.get("/auth/callback", async (req, res) => {
     });
 
     // Redirect to the dashboard with the user's name
-    res.redirect(`http://localhost:3000/dashboard?name=${encodeURIComponent(user.data.displayName)}`);
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard?name=${encodeURIComponent(user.data.displayName)}`);
   } catch (err) {
     console.error("Error in redirect:", err.response?.data || err.message);
     res.status(500).send("Auth failed.");

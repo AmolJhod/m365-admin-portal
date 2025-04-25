@@ -21,9 +21,12 @@ const Dashboard = () => {
         if (name) setUserName(name);
 
         // Fetch users from the backend
-        const res = await axios.get("http://localhost:3200/api/users", {
-          withCredentials: true, // Include cookies in the request
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/users`,
+          {
+            withCredentials: true, // Include cookies in the request
+          }
+        );
         setUsers(res.data.value || []);
       } catch (err) {
         console.error("Failed to fetch users", err);
@@ -38,7 +41,7 @@ const Dashboard = () => {
   const toggleUserState = async (id, enabled) => {
     try {
       await axios.patch(
-        `http://localhost:3200/api/users/${id}/account`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/${id}/account`,
         { enabled: !enabled },
         { withCredentials: true }
       );
@@ -57,7 +60,7 @@ const Dashboard = () => {
   const forceSignOut = async (id) => {
     try {
       await axios.post(
-        `http://localhost:3200/api/users/${id}/signout`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/${id}/signout`,
         {},
         { withCredentials: true }
       );
