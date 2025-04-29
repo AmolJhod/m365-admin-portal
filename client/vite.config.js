@@ -1,9 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { nodePolyfills } from "vite-plugin-node-polyfills"; // Correct import
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    nodePolyfills({
+      protocolImports: true, // Enable polyfills for protocol imports like `node:crypto`
+    }),
+  ],
   define: {
     "process.env": {}, // Define `process.env` to avoid errors
   },
@@ -14,5 +20,12 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: "globalThis", // Polyfill `global` for browser compatibility
+      },
+    },
   },
 });
