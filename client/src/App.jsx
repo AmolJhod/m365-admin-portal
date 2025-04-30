@@ -10,6 +10,8 @@ import WasteDetection from "./pages/finops/WasteDetection";
 import ShadowIT from "./pages/finops/ShadowIT";
 import UnifiedCostReporting from "./pages/finops/UnifiedCostReporting";
 import Forecasting from "./pages/finops/Forecasting";
+import UserList from "./pages/UserList";
+import Groups from "./pages/Groups";
 
 function App() {
   return (
@@ -24,7 +26,9 @@ function App() {
         <Route path="/finops/waste-detection" element={<WasteDetection />} />
         <Route path="/finops/shadow-it" element={<ShadowIT />} />
         <Route path="/finops/cost-tracking/unified-cost-reporting" element={<UnifiedCostReporting />} />
-  <Route path="/finops/cost-tracking/forecasting" element={<Forecasting />} />
+        <Route path="/finops/cost-tracking/forecasting" element={<Forecasting />} />
+        <Route path="/users" element={<UserList />} />
+        <Route path="/groups" element={<Groups />} />
       </Routes>
     </Router>
   );

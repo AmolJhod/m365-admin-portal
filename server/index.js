@@ -19,16 +19,15 @@ app.use("/api/finops", finopsRouter);
 
 // Fetch users from Microsoft Graph API
 app.get("/api/users", async (req, res) => {
-  const token = req.cookies.access_token; // Extract token from cookie
+  const token = req.cookies.access_token;
   if (!token) return res.status(401).json({ error: "Unauthorized: Missing token" });
 
   try {
     const graphRes = await axios.get("https://graph.microsoft.com/v1.0/users", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    res.json(graphRes.data);
+    res.json(graphRes.data.value); // <-- Make sure to send .value (array of users)
   } catch (err) {
-    console.error("Error fetching users:", err.response?.data || err.message);
     res.status(500).json({ error: "Failed to fetch users" });
   }
 });
@@ -79,6 +78,36 @@ app.post("/api/users/:id/signout", async (req, res) => {
   } catch (err) {
     console.error("Error signing out user:", err.response?.data || err.message);
     res.status(500).json({ error: "Failed to sign out user." });
+  }
+});
+
+// Fetch groups from Microsoft Graph API
+app.get("/api/groups", async (req, res) => {
+  const token = req.cookies.access_token;
+  if (!token) return res.status(401).json({ error: "Unauthorized: Missing token" });
+
+  try {
+    const graphRes = await axios.get("https://graph.microsoft.com/v1.0/groups?$select=displayName,groupTypes", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    // Optionally, fetch members for each group (can be slow for many groups)
+    const groups = await Promise.all(graphRes.data.value.map(async group => {
+      let members = [];
+      try {
+        const membersRes = await axios.get(`https://graph.microsoft.com/v1.0/groups/${group.id}/members`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        members = membersRes.data.value;
+      } catch {}
+      return {
+        displayName: group.displayName,
+        groupType: group.groupTypes && group.groupTypes.length ? group.groupTypes.join(", ") : "Security",
+        members
+      };
+    }));
+    res.json(groups);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch groups" });
   }
 });
 
